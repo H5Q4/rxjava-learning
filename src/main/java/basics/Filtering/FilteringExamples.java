@@ -1,4 +1,4 @@
-package basics.transforming;
+package basics.Filtering;
 
 import static common.Helper.subscribePrint;
 import rx.Observable;
