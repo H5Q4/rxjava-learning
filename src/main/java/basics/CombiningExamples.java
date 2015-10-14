@@ -6,6 +6,7 @@ import rx.Observable;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
+import static common.Helper.blockingSubscribePrint;
 import static common.Helper.subscribePrint;
 
 /**
@@ -19,16 +20,39 @@ public class CombiningExamples {
 
         Observable<String> timedZip = Observable.zip(Observable.from(Arrays.asList("s", "c", "o", "t", "t")),
             Observable.interval(300L, TimeUnit.MILLISECONDS), (ch, i) -> ch);
-        subscribePrint(timedZip, "timed zip");
+        blockingSubscribePrint(timedZip, "timed zip");
 
         Observable<String> zipWith = Observable.just("a", "b", "c")
             .zipWith(Observable.just(2, 3), (m, n) -> n + m);
         subscribePrint(zipWith, "zip with");
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        Observable<String> greetingsObservable = Observable.just("Hi", "Hello", "Howdy", "Yo", "Good to see ya")
+            .zipWith(Observable.interval(1L, TimeUnit.SECONDS), (m, n) -> m);
+        Observable<String> namesObservable = Observable.just("Meddle", "Tanya", "Dali", "Joshua")
+            .zipWith(Observable.interval(1500L, TimeUnit.MILLISECONDS), (m, n) -> m);
+        Observable<String> punctuationObservable = Observable.just(".", "?", "!", "!!!", "...")
+            .zipWith(Observable.interval(1100L, TimeUnit.MILLISECONDS), (m, n) -> m);
+
+        Observable<String> combinedObservable = Observable.combineLatest(greetingsObservable, namesObservable,
+            punctuationObservable, (greeting, name, punctuation) -> greeting + " " + name + punctuation);
+        blockingSubscribePrint(combinedObservable, "combined");
+
+        Observable<String> mergedObservable = Observable.merge(greetingsObservable, namesObservable,
+            punctuationObservable);
+        blockingSubscribePrint(mergedObservable, "words");
+
+        Observable<String> concatedObservable = Observable.concat(greetingsObservable, namesObservable,
+            punctuationObservable);
+        blockingSubscribePrint(concatedObservable, "concat");
+
+        Observable<String> startWith = punctuationObservable.startWith(namesObservable)
+            .startWith(greetingsObservable);
+        blockingSubscribePrint(startWith, "start with");
+
+//        try {
+//            Thread.sleep(5000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 }
