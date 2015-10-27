@@ -47,7 +47,7 @@ public class HttpRequestsExample {
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private Observable<Map> requestJSON(HttpAsyncClient client, String url) {
+    public Observable<Map> requestJSON(HttpAsyncClient client, String url) {
         Observable<String> rawResponse = ObservableHttp
             .createGet(url, client)
             .toObservable()
